@@ -17,6 +17,13 @@ type Blueprint<S extends StateTree = StateTree, T extends TransitionDict<S> = Tr
  */
 type IsLeafStateNode<T extends StateTree> = KeyOf<T> extends never ? true : false;
 
+type StatePathTransitionActionEntry<T extends Blueprint> = {
+    [S in Exhaust.StatePath<T["states"]>]: [
+        state: S,
+        action: readonly Match.TransitionAction<T["transitions"], S>[],
+    ];
+}[Exhaust.StatePath<T["states"]>];
+
 namespace Exhaust {
     type ExhaustStatePath<T extends StateTree> = {
         [K in KeyOf<T>]: IsLeafStateNode<T[K]> extends true ? K : `${K}.${ExhaustStatePath<T[K]>}`;
@@ -61,4 +68,4 @@ namespace Match {
 }
 
 export type { Blueprint, StateTree, TransitionDict };
-export type { IsLeafStateNode, Exhaust, Match };
+export type { IsLeafStateNode, Exhaust, Match, StatePathTransitionActionEntry };

@@ -1,16 +1,14 @@
-import type { Blueprint, Match, Exhaust } from "./blueprint.ts";
+import type { Blueprint, StatePathTransitionActionEntry, Exhaust } from "./blueprint.ts";
 
-function exec<T extends Blueprint>(blueprint: T, initialStatePath: Exhaust.StatePath<T["states"]>) {
-    let currStatePath = initialStatePath;
+function exec<T extends Blueprint>(blueprint: T, initialState: Exhaust.StatePath<T["states"]>) {
+    let isLive = true;
+    let currStatePath = initialState;
 
-    return get;
+    return [getEntry, kill];
 
-    type Snapshot<T extends Blueprint> = {
-        [S in Exhaust.StatePath<T["states"]>]: {
-            state: S;
-            actions: readonly Match.TransitionAction<T["transitions"], S>[];
-        };
-    }[Exhaust.StatePath<T["states"]>];
+    function getEntry(): StatePathTransitionActionEntry<T> {}
 
-    function get(): Snapshot<T> {}
+    function kill() {
+        isLive = false;
+    }
 }
